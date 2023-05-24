@@ -1,5 +1,5 @@
-.idea/
+SAE_2.2/.idea/
 *.iml
 *.iws
 *.ipr
-out/
+SAE_2.2/out/
