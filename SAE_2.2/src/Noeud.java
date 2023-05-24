@@ -1,5 +1,6 @@
 import java.util.ArrayList;
-Public class Noeud{
+import java.util.List;
+public class Noeud{
 	private String nom;
 	private List<Arc> adj;
 	public Noeud(String n){
@@ -14,17 +15,15 @@ Public class Noeud{
 	}
 
 	public void ajouterArc(String destination, double cout){
-		Arc sav;
-		boolean res;
-		for(int i=0; i<liste.size(); i++){
-			sav=adj.get(i);
-			if (!sav.nom.equals(destination)){
-				res=true;
-			}
-		}
-		if(res==true){
-			sav=new Arc(destination, cout);
-			adj.add(sav);
-		}
+		Arc sav = new Arc(destination, cout);
+		this.adj.add(sav);
+	}
+
+	public List<Arc> getAdj(){
+		return (ArrayList<Arc>) this.adj;
+	}
+
+	public String getNom(){
+		return this.nom;
 	}
 }
