@@ -1,5 +1,6 @@
-SAE_2.2/.idea/
+SAE_Graphes/SAE_2.2/.idea/
 *.iml
 *.iws
 *.ipr
-SAE_2.2/out/
+SAE_Graphes/SAE_2.2/out/
+
