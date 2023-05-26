@@ -1,6 +1,5 @@
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static java.lang.Math.round;
 
@@ -23,14 +22,28 @@ public class GrapheListe implements Graphe {
             while ((line = reader.readLine()) != null) {
                 String[] infos = line.split("\t");
                 if (infos.length == 3) {
-                    ajouterArc(infos[0], infos[1], Double.parseDouble(infos[2]));
+                    ajouterArc(String.valueOf(infos[0]), String.valueOf(infos[1]), Double.parseDouble(infos[2]));
                 } else {
                     errs++;
                 }
             }
-            System.out.println("Graphe construit à partir du fichier " + nomFichier + " avec 0 erreurs internes.");
+            System.out.println("Graphe construit a partir du fichier " + nomFichier + " avec " + errs + " erreurs internes.");
         } catch (IOException e) {
             System.err.println("Une erreur est survenue lors de la lecture du fichier : " + e.getMessage());
+        }
+    }
+
+    public GrapheListe(int nbNoeuds){
+        this.ensNom = new ArrayList<>();
+        this.ensNoeuds = new ArrayList<>();
+        Random ran = new Random();
+        for (int i=0; i<nbNoeuds*3; i++){
+             int noeud = ran.nextInt(nbNoeuds);
+             int noeud2 = noeud;
+             while (noeud2 == noeud){
+                 noeud2 = ran.nextInt(nbNoeuds);
+            }
+            ajouterArc(String.valueOf(noeud), String.valueOf(noeud2), ran.nextInt(nbNoeuds));
         }
     }
 
@@ -44,12 +57,19 @@ public class GrapheListe implements Graphe {
         return (ArrayList<Arc>) param.getAdj();
     }
 
-
     public void ajouterArc(String depart, String destination, double cout) {
-        Noeud dp = new Noeud(depart);//On créée un noeud qui sera utile dans deux blocs de la méthode
-        if (!ensNom.contains(depart)) {//Si un noeud du même nom n'existe pas dans ce graphe
-            ensNom.add(depart);//On l'ajoute à la liste du graphe
-            ensNoeuds.add(dp);//idem
+        Noeud dp = null;//On créée un noeud qui sera utile dans deux blocs de la méthode
+        for (Noeud noeud : ensNoeuds) {//On cherche dans la liste si le noeud de départ existe
+            if (noeud.getNom().equals(depart)) {
+                dp = noeud;//Si oui on le récupère dans l'instance dp
+                break;
+            }
+        }
+
+        if (dp == null) {//S'il n'existe pas, on le créée puis l'ajoutons au graphe
+            dp = new Noeud(depart);
+            ensNom.add(depart);
+            ensNoeuds.add(dp);
         }
 
         if (!ensNom.contains(destination)) {//Si une destination du même nom n'existe pas dans ce graphe
@@ -57,24 +77,30 @@ public class GrapheListe implements Graphe {
             ensNom.add(destination);//On l'ajoute a ce graphe
             ensNoeuds.add(dest);
         }
-        //Noeud index = new Noeud(depart);//Noeud temporaire avec le nom passé en paramètre afin de pouvoir utiliser la méthode indexOf
-        Noeud param = this.ensNoeuds.get(ensNoeuds.indexOf(dp));//Si le noeud existe deja, on le recupere
-        for (Arc arc : param.getAdj()) { // On vérifie si l'arc existe déjà
+
+        //Noeud param = this.ensNoeuds.get(this.ensNoeuds.indexOf(dp));//On récupère le noeud qui est maintenant forcément présent dans la liste
+        for (Arc arc : dp.getAdj()) { // On vérifie si l'arc existe déjà
             if (arc.getDest().equals(destination)) {
                 if (arc.getCout() == cout) {
-                    throw new IllegalArgumentException("L'arc saisi existe deja.");//S'il existe déjà, exception
+                    return;//Si il existe déjà, on sort de la méthode sans rien faire
                 } else {
                     arc.setCout(cout);//S'il existe déjà mais que le cout est différent, on met à jour le cout
                     return;//Puis on sort de la méthode
                 }
             }
         }
-        param.ajouterArc(destination, cout);//Sinon on peut ajouter l'arc au noeud.
+        dp.ajouterArc(destination, cout);//Sinon on peut ajouter l'arc au noeud.
     }
 
     public String toString() {
+        List<Noeud> listriee = new ArrayList<>(this.ensNoeuds);//Liste auxiliaire pour trier la liste de noeuds
+        Collections.sort(listriee, new Comparator<Noeud>() {//Tri de la liste
+            public int compare(Noeud n1, Noeud n2) {
+                return n1.getNom().compareTo(n2.getNom());
+            }
+        });
         String res = "";
-        for (Noeud nd : this.ensNoeuds) {
+        for (Noeud nd : listriee) {
             List<Arc> adj = nd.getAdj();
             if (adj.size() != 0) {
                 res += nd.getNom() + " ->";
@@ -93,7 +119,7 @@ public class GrapheListe implements Graphe {
             List<Arc> adj = nd.getAdj();
             if (adj != null) {
                 for (int i = 0; i < adj.size(); i++) {
-                    res += nd.getNom() + " -> " + adj.get(i).getDest() + " [label = " + round(adj.get(i).getCout()) + "]";
+                    res += "\"" + nd.getNom() + "\" -> " + "\"" + adj.get(i).getDest() + "\" [label = " + round(adj.get(i).getCout()) + "]";
                     res += "\n";
                 }
 

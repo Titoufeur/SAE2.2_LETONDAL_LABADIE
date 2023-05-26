@@ -1,25 +1,37 @@
+import java.io.IOException;
 import java.util.List;
 
 public class main {
     public static void main(String[] args){
-        GrapheListe gl = new GrapheListe();
-        System.out.println("gl cree");
-        gl.ajouterArc("A", "B", 12);
-        gl.ajouterArc("B", "E", 11);
-        gl.ajouterArc("A", "D", 87);
-        gl.ajouterArc("E", "D", 43);
-        gl.ajouterArc("D", "B",23);
-        gl.ajouterArc("D", "C", 10);
-        gl.ajouterArc("C", "A", 19);
-        System.out.println(gl);
-        System.out.println(gl.toGraphviz());
-        System.out.println("graphviz");
+        GrapheListe graphe = new GrapheListe(750);
+        BellmanFord bellmanFord = new BellmanFord();
+        long debutBellmanFord = System.nanoTime();
+        Valeur resultatBellmanFord = bellmanFord.resoudre(graphe, graphe.listeNoeuds().get(0));
+        long finBellmanFord = System.nanoTime();
 
-        GrapheListe gl2 = new GrapheListe();
-        gl2.matriceAdj("D:\\Documents\\Cours\\SAE_Graphes\\SAE_2.2\\graphes\\Adjacence.txt", "Graphe1Essai.txt");
-        BellmanFord bf = new BellmanFord();
-        Valeur v = bf.resoudre(gl, "A");
-        List<String> ls = v.calculerChemin("C");
-        System.out.println(ls);
+        Dijkstra dijkstra = new Dijkstra();
+        long debutDijkstra = System.nanoTime();
+        Valeur resultatDijkstra = dijkstra.resoudre(graphe, graphe.listeNoeuds().get(0));
+        long finDijkstra = System.nanoTime();
+
+        long tempsExecutionBellmanFord = (finBellmanFord - debutBellmanFord) / 1000; // Convertir en microsecondes
+        long tempsExecutionDijkstra = (finDijkstra - debutDijkstra) / 1000; // Convertir en microsecondes
+
+        System.out.println("Temps d'execution (Bellman-Ford) : " + tempsExecutionBellmanFord + " us");
+        System.out.println("Temps d'execution (Dijkstra) : " + tempsExecutionDijkstra + " us");
+        try{
+            Labyrinthe lb = new Labyrinthe("laby/laby1.txt");
+            GrapheListe glaby = lb.genererGraphe();
+            System.out.println(glaby.toString());
+            Dijkstra dk = new Dijkstra();
+            Valeur resulLaby = dk.resoudre(glaby, "1, 1");
+            List<String> resLaby = resulLaby.calculerChemin("1, 1", "3, 5");
+            System.out.println(resLaby);
+        } catch (IOException e){
+            System.out.println(e.getMessage());
+        }
+
+
+
     }
 }

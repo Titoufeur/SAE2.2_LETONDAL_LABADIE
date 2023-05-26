@@ -1,5 +1,3 @@
-package laby;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -183,5 +181,31 @@ public class Labyrinthe {
     public boolean getMur(int x, int y) {
         // utilise le tableau de boolean
         return this.murs[x][y];
+    }
+
+    public GrapheListe genererGraphe(){
+        GrapheListe gl = new GrapheListe();
+        for (int x = 0; x < murs.length; x++) {
+            for (int y = 0; y < murs[x].length; y++) {
+                if (!murs[x][y]){
+                    if (x-1 >= 0 && !murs[x-1][y]) {
+                        gl.ajouterArc(String.valueOf(x) + ", " + String.valueOf(y), String.valueOf(x-1) + ", " + String.valueOf(y), 1);
+                    }
+                    if (x+1 < murs.length && !murs[x+1][y]) {
+                        gl.ajouterArc(String.valueOf(x) + ", " + String.valueOf(y), String.valueOf(x+1) + ", " + String.valueOf(y), 1);
+                    }
+                    if (y-1 >= 0 && !murs[x][y-1]) {
+                        gl.ajouterArc(String.valueOf(x) + ", " + String.valueOf(y), String.valueOf(x) + ", " + String.valueOf(y-1), 1);
+                    }
+                    if (y+1 < murs[x].length && !murs[x][y+1]) {
+                        gl.ajouterArc(String.valueOf(x) + ", " + String.valueOf(y), String.valueOf(x) + ", " + String.valueOf(y+1), 1);
+                    }
+
+                }
+                // Faire quelque chose avec la valeur
+                // ...
+            }
+        }
+        return gl;
     }
 }

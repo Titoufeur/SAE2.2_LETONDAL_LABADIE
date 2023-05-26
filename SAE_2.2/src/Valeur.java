@@ -88,21 +88,21 @@ public class Valeur {
 
     }
 
-    public List<String> calculerChemin(String destination){
+    public List<String> calculerChemin(String depart, String destination){
         List<String> res = new ArrayList<>();
         String valeur = this.toString();
         String[] chaines = valeur.split("\n");//On split pour avoir un tableau contenant chaque ligne une à une
-        String parent = destination;
-        res.add(parent);
+        String p = destination;
+        res.add(p);
         int posDest = trouverPos(chaines, destination);//On cherche la position du noeud recherché grâce à la méthode auxiliaire
         for (int i=0;i<chaines.length;i++){
-            parent = String.valueOf(chaines[posDest].charAt(chaines[posDest].length() - 1));//On cherche son parent qui est le dernier caractère
-            if (!parent.equals("l")){
-                res.add(0, parent);
+            p = trouverParent(chaines, destination); //On cherche son parent qui est le dernier caractère
+            if (!p.equals(depart)){
+                res.add(0, p);
             } else{
                 break;
             }
-            posDest = trouverPos(chaines, parent);
+            destination = p;//La destination devient le parent pour remonter jusqu'à l'origine
         }
         return res;
     }
@@ -110,12 +110,20 @@ public class Valeur {
     public int trouverPos(String[] chaines, String destination){
         int indiceDest = 0;
         for (int i=0;i<chaines.length;i++){
-            if (String.valueOf(chaines[i].charAt(0)).equals(destination)){
+            String[] res = chaines[i].split(" ->");
+            if (res[0].equals(destination)){
                 indiceDest = i;
                 break;
             }
         }
         return indiceDest;
+    }
+
+    public String trouverParent(String[] chaines, String depart){
+        int indice = trouverPos(chaines, depart);
+        String ligne[] = chaines[indice].split("p:");
+        String parent = ligne[1];
+        return parent;
     }
     //A ->  V:0.0 p:null
     //B ->  V:12.0 p:A
